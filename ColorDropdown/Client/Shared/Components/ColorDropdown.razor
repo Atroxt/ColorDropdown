@@ -1,0 +1,82 @@
+﻿@using Telerik.Blazor
+@using Telerik.Blazor.Components
+
+@typeparam TEnum where TEnum: struct, Enum, IComparable, IFormattable, IConvertible
+@typeparam TAttribute where TAttribute: Attribute
+
+<div id="colorIndicatorDropDownComponent">
+    <TelerikDropDownList Data="_enumList"
+                         ValueField="Key"
+                         TextField="Value"
+    @bind-Value="@Value"
+                         ScrollMode="DropDownScrollMode.Virtual"
+                         Filterable="@IsFilterAble"
+                         FilterOperator="StringFilterOperator.Contains"
+                         ItemHeight="35"
+                         PageSize="10"
+                         Enabled="@(!IsReadOnly)"
+                         Class="colorIndicatorDropDown">
+        <DropDownListSettings>
+            <DropDownListPopupSettings Class="colorIndicatorDropDownListClass" />
+        </DropDownListSettings>
+        <ItemTemplate>
+            @{
+                var itemSelection = context.Key;
+                <span class="colorIndicator">
+                    <i class="fa-solid fa-circle @itemSelection"></i>
+                    <label>@context.Value</label>
+                </span>
+
+            }
+        </ItemTemplate>
+        <ValueTemplate>
+            @{
+                var i = context.Key;
+                <span class="colorIndicator @i">
+                    <i class="fa-solid fa-circle @i"></i>
+                    <label class="@i">@context.Value</label>
+                </span>
+            }
+        </ValueTemplate>
+    </TelerikDropDownList>
+</div>
+
+@code {
+#pragma warning disable CS8618, BL0007
+    private TEnum value;
+
+    [Parameter, EditorRequired]
+    public TEnum Value
+    {
+        get => value;
+        set
+        {
+            if (this.value.Equals(value))
+            {
+                return;
+            }
+            this.value = value;
+            if (ValueChanged.HasDelegate)
+            {
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<TEnum> ValueChanged { get; set; }
+
+    [Parameter]
+    public bool IsFilterAble { get; set; }
+
+    [Parameter]
+    public bool IsReadOnly { get; set; }
+
+    readonly IEnumerable<KeyValuePair<TEnum, string>> _enumList = Enum.GetValues(typeof(TEnum))
+        .Cast<TEnum>()
+
+        .Where(e => e.GetType().GetField(e.ToString())!.GetCustomAttributes(typeof(TAttribute), false).Any())
+        .Select(x => new KeyValuePair<TEnum, string>(key: x, value: x.GetDisplayName()))
+        .ToList();
+
+}

@@ -1,0 +1,28 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+<div class="row">
+    <div class="col-6">
+        <ColorDropdown TEnum="ColorIndicator"
+                       TAttribute="ColorIndicators"
+                       @bind-Value="Color1"></ColorDropdown>
+    </div>
+    <div class="col-6"> your selection is @Color1</div>
+    
+    <div class="col-6">
+        <ColorDropdown TEnum="ColorIndicator"
+                       TAttribute="ColorIndicators"
+                       @bind-Value="Color2"></ColorDropdown>
+    </div>
+    <div class="col-6"> your selection is @Color2</div>
+</div>
+
+
+@code
+{
+    public ColorIndicator Color1 { get; set; }
+    public ColorIndicator Color2 { get; set; }
+
+}
